@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForjaConsulting — Presentación Corporativa</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Inter:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap');
+
+  :root {
+    --blue-deep:    #1D1A70;
+    --blue-anchor:  #27325A;
+    --blue-corp:    #33487A;
+    --blue-dark:    #152E57;
+    --violet:       #8560C0;
+    --violet-light: #9B7DD4;
+    --orange:       #EE8028;
+    --orange-dark:  #AA2F0C;
+    --orange-warm:  #EC8E48;
+    --teal:         #4CCED5;
+    --teal-mid:     #73CFCE;
+    --white:        #FFFFFF;
+    --off-white:    #F8FAFC;
+    --font-display: 'DM Sans', sans-serif;
+    --font-hero:    'Syne', sans-serif;
+    --font-body:    'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: var(--font-body);
+    background: #0a0a0f;
+    color: var(--white);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ── SLIDE SYSTEM ─────────────────────────────────── */
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1),
+                transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    transform: translateY(30px);
+    overflow: hidden;
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  /* ── NAVIGATION ────────────────────────────────────── */
+  .nav {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    padding: 10px 20px;
+    border-radius: 100px;
+  }
+
+  .nav-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 6px 12px;
+    border-radius: 50px;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+  .nav-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+  .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+  .nav-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active {
+    width: 20px;
+    border-radius: 3px;
+    background: var(--orange);
+  }
+
+  .slide-counter {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    min-width: 40px;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── PROGRESS BAR ──────────────────────────────────── */
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--violet), var(--teal));
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    z-index: 100;
+  }
+
+  /* ── LOGO WATERMARK ────────────────────────────────── */
+  .watermark {
+    position: fixed;
+    top: 28px;
+    right: 36px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.05em;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .watermark img {
+    height: 42px;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+    opacity: 0.85;
+    filter: grayscale(100%) brightness(1.1) contrast(1.05);
+  }
+  .watermark span { color: var(--orange); }
+  .watermark .watermark-text { display: inline; }
+  .watermark img[style*="display: none"] + .watermark-text { font-weight: 600; }
+  /* Ocultar watermark solo en portada (slide 1) */
+  body.s1-on .watermark { display: none !important; }
+
+  /* ── SLIDE 1: PORTADA (premium) ────────────────────── */
+  #s1 {
+    background: #060510;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 72px;
+  }
+
+  /* Fondo: gradiente profundo + orbe de luz + textura sutil */
+  #s1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 120% 80% at 50% 20%, rgba(29,26,112,0.6) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 100% at 80% 100%, rgba(133,96,192,0.18) 0%, transparent 45%),
+      radial-gradient(ellipse 60% 60% at 20% 80%, rgba(76,206,213,0.08) 0%, transparent 50%),
+      linear-gradient(180deg, #0a0818 0%, #060510 50%, #040308 100%);
+    pointer-events: none;
+  }
+
+  /* Orbe decorativo — movimiento suave */
+  #s1::after {
+    content: '';
+    position: absolute;
+    right: -15%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(70vw, 720px);
+    height: min(70vw, 720px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(133,96,192,0.07) 0%, transparent 65%);
+    border: 1px solid rgba(255,255,255,0.04);
+    animation: s1-orb 12s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes s1-orb {
+    0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.8; }
+    50% { transform: translateY(-52%) scale(1.08); opacity: 1; }
+  }
+
+  /* Contenedor central — una sola columna, máximo impacto */
+  .s1-center {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* Logo hero (opcional, más pequeño que antes para no competir con el titular) */
+  .s1-hero-logo {
+    margin-bottom: 32px;
+  }
+  .s1-hero-logo img {
+    height: clamp(72px, 10vw, 120px);
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 32px rgba(0,0,0,0.35));
+    opacity: 0;
+    animation: s1-heroLogo 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+  }
+  @keyframes s1-heroLogo {
+    from { opacity: 0; transform: scale(0.92) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .s1-hero-fallback {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 8vw, 72px);
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+  .s1-hero-fallback .accent { color: var(--orange); }
+
+  /* Eyebrow minimalista */
+  .s1-eyebrow {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 24px;
+    animation: s1-fadeUp 0.9s 0.5s ease both;
+  }
+
+  /* Titular — el protagonista */
+  .s1-title {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 5.5vw, 78px);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    color: #fff;
+    margin-bottom: 20px;
+    animation: s1-fadeUp 0.9s 0.6s ease both;
+  }
+  .s1-title .accent {
+    display: block;
+    background: linear-gradient(135deg, var(--orange) 0%, var(--orange-warm) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-top: 0.05em;
+  }
+
+  .s1-sub {
+    font-family: var(--font-body);
+    font-size: clamp(16px, 1.8vw, 22px);
+    font-weight: 400;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+    max-width: 520px;
+    margin: 0 auto 48px;
+    animation: s1-fadeUp 0.9s 0.75s ease both;
+  }
+
+  @keyframes s1-fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Barra de datos — editorial, una línea */
+  .s1-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(24px, 4vw, 48px);
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+    padding: 24px 32px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 100px;
+    backdrop-filter: blur(16px);
+    animation: s1-fadeUp 0.9s 0.95s ease both;
+  }
+
+  .s1-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    text-align: left;
+  }
+
+  .s1-stat-num {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3.2vw, 42px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .s1-stat-num.o { color: var(--orange); }
+  .s1-stat-num.v { color: var(--violet-light); }
+  .s1-stat-num.t { color: var(--teal); }
+
+  .s1-stat-label {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.02em;
+    line-height: 1.35;
+    max-width: 140px;
+  }
+
+  /* ── SLIDE 2: EL PROBLEMA ──────────────────────────── */
+  #s2 {
+    background: var(--off-white);
+    color: var(--blue-anchor);
+    align-items: center;
+    justify-content: center;
+  }
+
+  #s2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 55%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-dark) 100%);
+    clip-path: polygon(8% 0, 100% 0, 100% 100%, 0% 100%);
+    z-index: 1;
+  }
+
+  .s2-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    width: 100%;
+    max-width: 1100px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .s2-left { color: var(--blue-anchor); }
+
+  .s2-eyebrow {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 20px;
+  }
+
+  .s2-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: 24px;
+    color: var(--blue-anchor);
+  }
+
+  .s2-title em {
+    font-style: normal;
+    color: var(--orange);
+  }
+
+  .s2-body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.75;
+    color: #4a5568;
+    margin-bottom: 32px;
+  }
+
+  .s2-stat-big {
+    font-family: var(--font-display);
+    font-size: 80px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--blue-anchor);
+  }
+
+  .s2-stat-big span { color: var(--orange); }
+  .s2-stat-desc {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: #718096;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  .s2-right { color: white; padding-left: 20px; }
+
+  .s2-pains {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .pain-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+
+  .pain-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .pain-text { font-family: var(--font-body); font-size: 14px; line-height: 1.5; color: rgba(255,255,255,0.8); }
+  .pain-text strong { display: block; font-size: 15px; font-weight: 600; color: white; margin-bottom: 3px; }
+
+  /* ── SLIDE 3: QUIÉNES SOMOS (elegante · interactivo) ── */
+  #s3 {
+    background: linear-gradient(160deg, #0d0b28 0%, var(--blue-anchor) 40%, var(--blue-deep) 100%);
+    overflow: hidden;
+  }
+
+  #s3::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 20%, rgba(133,96,192,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 80% at 85% 80%, rgba(76,206,213,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(238,128,40,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Orbes flotantes decorativos */
+  #s3::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    border: 1px solid rgba(76,206,213,0.08);
+    top: -150px;
+    right: -100px;
+    animation: s3-float 15s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes s3-float {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+    50% { transform: translate(-20px, 15px) scale(1.05); opacity: 0.8; }
+  }
+
+  .s3-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .section-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--teal);
+    border-radius: 2px;
+  }
+
+  .s3-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 4.5vw, 60px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: 16px;
+  }
+
+  .s3-title .grad {
+    background: linear-gradient(135deg, var(--violet) 0%, var(--teal) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .s3-sub {
+    font-family: var(--font-body);
+    font-size: 18px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+    max-width: 600px;
+    margin-bottom: 52px;
+  }
+
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    perspective: 1200px;
+  }
+
+  .pillar {
+    padding: 32px 28px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease,
+                border-color 0.35s ease,
+                background 0.35s ease,
+                padding 0.4s ease,
+                opacity 0.35s ease,
+                filter 0.35s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+  }
+
+  .pillar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transition: height 0.3s ease, opacity 0.3s ease;
+  }
+
+  .pillar.p1::before { background: linear-gradient(90deg, var(--orange), var(--orange-warm)); }
+  .pillar.p2::before { background: linear-gradient(90deg, var(--violet), var(--teal)); }
+  .pillar.p3::before { background: linear-gradient(90deg, var(--teal), var(--teal-mid)); }
+
+  .pillar:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .pillar:hover::before { height: 6px; opacity: 1; }
+
+  .pillar-icon-wrap { display: block; }
+  .pillar-body { display: block; }
+
+  /* Animación breve al pasar el mouse */
+  .pillar:hover .pillar-icon {
+    transform: scale(1.12);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .pillar .pillar-icon { transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+  .pillar-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .pillar:hover .pillar-icon {
+    transform: scale(1.15) rotate(5deg);
+  }
+
+  .pillar.p1 .pillar-icon svg { color: var(--orange); }
+  .pillar.p2 .pillar-icon svg { color: var(--violet-light); }
+  .pillar.p3 .pillar-icon svg { color: var(--teal); }
+
+  .pillar-title {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+    transition: color 0.25s ease;
+  }
+
+  .pillar:hover .pillar-title { color: #fff; }
+
+  .pillar-desc {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.65;
+    transition: color 0.25s ease;
+  }
+
+  .pillar:hover .pillar-desc { color: rgba(255,255,255,0.85); }
+
+  /* Animación de entrada escalonada para pilares */
+  #s3.active .pillar:nth-child(1) { animation: s3-pillarIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+  #s3.active .pillar:nth-child(2) { animation: s3-pillarIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both; }
+  #s3.active .pillar:nth-child(3) { animation: s3-pillarIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both; }
+
+  @keyframes s3-pillarIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ── SLIDE 4: ARQUITECTURA EMPRESARIAL (árbol) ── */
+  #s4 {
+    background: linear-gradient(160deg, #0a0a12 0%, var(--blue-deep) 40%, #0d0b28 100%);
+    padding: 32px 48px;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  #s4::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(133,96,192,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 60% at 80% 80%, rgba(76,206,213,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .arch-tree {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1150px;
+    min-height: 520px;
+  }
+
+  /* Raíz del árbol */
+  .tree-root {
+    padding: 18px 40px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    font-family: var(--font-display);
+    font-size: clamp(22px, 2.8vw, 28px);
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.02em;
+  }
+
+  .tree-root-sub {
+    font-family: var(--font-body);
+    font-size: clamp(13px, 1.4vw, 15px);
+    color: rgba(255,255,255,0.5);
+    margin-top: 10px;
+    margin-bottom: 0;
+    letter-spacing: 0.02em;
+  }
+
+  /* Línea vertical del tronco */
+  .tree-trunk {
+    width: 2px;
+    height: 28px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
+    margin: 0 auto;
+  }
+
+  /* Nivel 1: los 4 pilares */
+  .tree-level-1 {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .tree-branch {
+    flex: 1;
+    min-width: 220px;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  /* Línea vertical que baja del conector a cada rama */
+  .tree-branch::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 2px;
+    height: 20px;
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-50%);
+  }
+
+  /* Nodo del pilar (carta) — clicable para expandir */
+  .tree-node {
+    width: 100%;
+    padding: 22px 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tree-node::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .tree-branch.p1 .tree-node::before { background: linear-gradient(90deg, var(--orange), var(--orange-warm)); }
+  .tree-branch.p2 .tree-node::before { background: linear-gradient(90deg, var(--violet), var(--violet-light)); }
+  .tree-branch.p3 .tree-node::before { background: linear-gradient(90deg, var(--teal), var(--teal-mid)); }
+  .tree-branch.p4 .tree-node::before { background: linear-gradient(90deg, var(--orange-dark), var(--orange)); }
+
+  .tree-node:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .tree-node-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tree-node-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .tree-branch.p1 .tree-node-icon svg { color: var(--orange); }
+  .tree-branch.p2 .tree-node-icon svg { color: var(--violet-light); }
+  .tree-branch.p3 .tree-node-icon svg { color: var(--teal); }
+  .tree-branch.p4 .tree-node-icon svg { color: var(--orange); }
+
+  .tree-node-title {
+    font-family: var(--font-display);
+    font-size: clamp(15px, 1.6vw, 18px);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0;
+    line-height: 1.2;
+  }
+
+  .tree-node-sub {
+    font-family: var(--font-body);
+    font-size: clamp(11px, 1.2vw, 13px);
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.02em;
+  }
+
+  /* Línea que baja del nodo a las hojas */
+  .tree-stem {
+    width: 2px;
+    height: 16px;
+    background: rgba(255,255,255,0.1);
+    margin: 14px auto 0;
+    transition: opacity 0.3s;
+  }
+
+  /* Hojas (sub-items) — desplegables al clic */
+  .tree-leaves {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-top: 10px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease, margin 0.35s ease;
+  }
+
+  .tree-branch.expanded .tree-leaves {
+    max-height: 400px;
+    opacity: 1;
+  }
+
+  .tree-branch.expanded .tree-stem { opacity: 1; }
+  .tree-branch:not(.expanded) .tree-stem { opacity: 0.4; }
+
+  .tree-node-expand-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    transition: transform 0.35s ease;
+  }
+
+  .tree-branch.expanded .tree-node-expand-icon {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  .tree-leaf {
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: clamp(12px, 1.2vw, 14px);
+    line-height: 1.5;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.4;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .tree-leaf:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  .tree-leaf strong {
+    display: block;
+    font-size: clamp(11px, 1.1vw, 13px);
+    color: var(--teal);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .arch-tree-hint {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.06em;
+    margin-top: 24px;
+  }
+
+  /* Línea horizontal que conecta el tronco a las ramas */
+  .tree-connector {
+    position: absolute;
+    top: 74px;
+    left: 5%;
+    right: 5%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 15%, rgba(255,255,255,0.12) 85%, transparent);
+    pointer-events: none;
+  }
+
+  /* ── SLIDE 5: SERVICIOS ────────────────────────────── */
+  #s5 {
+    background: #0a0a0f;
+    padding: 48px 80px;
+  }
+
+  #s5::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(133,96,192,0.12) 0%, transparent 70%);
+  }
+
+  .s4-header, .s5-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .s4-title, .s5-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 10px;
+  }
+
+  .s4-sub, .s5-sub {
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .service-col {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .service-col-header {
+    padding: 20px 18px 16px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .col1 .service-col-header { background: linear-gradient(135deg, var(--blue-anchor), var(--blue-deep)); }
+  .col2 .service-col-header { background: linear-gradient(135deg, #2d1f5e, var(--blue-anchor)); }
+  .col3 .service-col-header { background: linear-gradient(135deg, var(--blue-deep), #1a3d5c); }
+  .col4 .service-col-header { background: linear-gradient(135deg, #1a3d4d, #0d2b3a); }
+
+  .service-col-icon { font-size: 18px; }
+
+  .service-items {
+    padding: 14px;
+    background: rgba(255,255,255,0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .service-item {
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .service-item::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .col1 .service-item::before { background: var(--orange); }
+  .col2 .service-item::before { background: var(--violet); }
+  .col3 .service-item::before { background: var(--teal); }
+  .col4 .service-item::before { background: var(--teal-mid); }
+
+  /* ── SLIDE 6: METODOLOGÍA FORJA ────────────────────── */
+  #s6 {
+    background: linear-gradient(135deg, var(--blue-deep) 0%, #0d0b35 100%);
+  }
+
+  #s6::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 80% at 50% 50%, rgba(133,96,192,0.12) 0%, transparent 70%);
+  }
+
+  .s5-content, .s6-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .s5-title, .s6-title {
+    font-family: var(--font-display);
+    font-size: clamp(38px, 4.5vw, 56px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 10px;
+  }
+
+  .s5-sub, .s6-sub {
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 52px;
+  }
+
+  .forja-steps {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+  .forja-step {
+    flex: 1;
+    min-width: 160px;
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .forja-step::after {
+    content: '→';
+    position: absolute;
+    right: -12px;
+    top: 80px;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: rgba(255,255,255,0.2);
+    z-index: 2;
+  }
+
+  .forja-step:last-child::after { display: none; }
+
+  .forja-step-card {
+    width: 100%;
+    padding: 28px 16px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 16px;
+  }
+
+  .forja-step-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .step-letter {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .f-step:nth-child(1) .step-letter { color: var(--orange); }
+  .f-step:nth-child(2) .step-letter { color: var(--violet-light); }
+  .f-step:nth-child(3) .step-letter { color: var(--teal); }
+  .f-step:nth-child(4) .step-letter { color: var(--orange-warm); }
+  .f-step:nth-child(5) .step-letter { color: var(--teal-mid); }
+
+  .step-word {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .step-desc {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.5;
+  }
+
+  .step-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.03);
+    margin: 4px;
+  }
+
+  /* Contenido desplegable bajo cada tarjeta */
+  .forja-step-detail {
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 0;
+  }
+
+  .forja-step.expanded .forja-step-detail {
+    max-height: 220px;
+    margin-top: 14px;
+  }
+
+  .forja-step-detail-inner {
+    padding: 16px 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.55;
+    text-align: left;
+  }
+
+  .forja-step-detail-inner strong {
+    display: block;
+    font-size: 12px;
+    color: var(--teal);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .forja-step-card .step-bg { pointer-events: none; }
+
+  /* ── SLIDE 7: IMPACTO / RESULTADOS (rediseño) ──────── */
+  #s7 {
+    background: linear-gradient(165deg, #0a0818 0%, var(--blue-deep) 45%, #0d0b28 100%);
+    color: white;
+  }
+
+  #s7::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(133,96,192,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 60% at 80% 100%, rgba(76,206,213,0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .s6-content, .s7-content {
+    max-width: 1100px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .s6-header, .s7-header {
+    text-align: center;
+    margin-bottom: 44px;
+  }
+
+  .s6-eyebrow, .s7-eyebrow {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 16px;
+  }
+
+  .s6-title, .s7-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: #fff;
+    line-height: 1.15;
+  }
+
+  .s6-title em, .s7-title em { font-style: normal; color: var(--orange); }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 36px;
+  }
+
+  .metric-card {
+    padding: 28px 22px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    border-top: 3px solid transparent;
+    text-align: center;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.35s ease,
+                border-color 0.3s ease,
+                background 0.3s ease;
+    cursor: default;
+    backdrop-filter: blur(12px);
+  }
+
+  .metric-card:nth-child(1) { border-top-color: var(--orange); }
+  .metric-card:nth-child(2) { border-top-color: var(--violet); }
+  .metric-card:nth-child(3) { border-top-color: var(--teal); }
+  .metric-card:nth-child(4) { border-top-color: var(--orange-dark); }
+
+  .metric-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    border-color: rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.07);
+  }
+
+  .metric-num {
+    font-family: var(--font-display);
+    font-size: clamp(38px, 4vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+
+  .mc1 .metric-num { color: var(--orange); }
+  .mc2 .metric-num { color: var(--violet-light); }
+  .mc3 .metric-num { color: var(--teal); }
+  .mc4 .metric-num { color: var(--orange); }
+
+  .metric-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.45;
+  }
+
+  .metric-source {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 10px;
+    display: block;
+  }
+
+  /* Cita destacada */
+  .s6-quote {
+    padding: 32px 40px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-left: 4px solid var(--orange);
+    border-radius: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    color: white;
+    transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .s6-quote:hover {
+    background: rgba(255,255,255,0.07);
+    border-left-color: var(--orange-warm);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+  }
+
+  .quote-mark {
+    font-family: var(--font-display);
+    font-size: 64px;
+    line-height: 0.7;
+    color: var(--orange);
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .quote-text {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.92);
+    letter-spacing: -0.01em;
+  }
+
+  .quote-source {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 12px;
+  }
+
+  /* Animación de entrada para slide 7 */
+  #s7.active .s7-header { animation: s7-fadeUp 0.6s ease both; }
+  #s7.active .metric-card:nth-child(1) { animation: s7-fadeUp 0.6s 0.15s ease both; }
+  #s7.active .metric-card:nth-child(2) { animation: s7-fadeUp 0.6s 0.25s ease both; }
+  #s7.active .metric-card:nth-child(3) { animation: s7-fadeUp 0.6s 0.35s ease both; }
+  #s7.active .metric-card:nth-child(4) { animation: s7-fadeUp 0.6s 0.45s ease both; }
+  #s7.active .s6-quote { animation: s7-fadeUp 0.6s 0.55s ease both; }
+  @keyframes s7-fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SLIDE 7B: EQUIPO DE LIDERAZGO ─────────────────── */
+  #s7-team {
+    background: linear-gradient(135deg, #0d0b2e 0%, var(--blue-anchor) 50%, #152E57 100%);
+  }
+
+  #s7-team::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle 280px at 15% 20%, rgba(133,96,192,0.12) 0%, transparent 60%),
+      radial-gradient(circle 320px at 85% 80%, rgba(76,206,213,0.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .team-slide-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .team-slide-inner .section-label {
+    margin-bottom: 12px;
+  }
+
+  .team-slide-inner .team-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 3.8vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .team-slide-inner .team-title .team-title-accent {
+    color: var(--orange);
+    display: inline-block;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+  }
+
+  .team-slide-inner .team-title:hover .team-title-accent {
+    transform: scale(1.02);
+    text-shadow: 0 0 24px rgba(238,128,40,0.4);
+  }
+
+  .team-slide-inner .team-sub {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .team-card {
+    position: relative;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease,
+                background 0.35s ease,
+                border-color 0.35s ease;
+  }
+
+  .team-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
+    transform: translateX(-100%) skewX(-18deg);
+    transition: transform 0.6s ease;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .team-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(238,128,40,0.2),
+                0 0 40px rgba(238,128,40,0.08);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(238,128,40,0.25);
+  }
+
+  .team-card:hover::before {
+    transform: translateX(100%) skewX(-18deg);
+  }
+
+  .team-card-photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    background: linear-gradient(160deg, rgba(133,96,192,0.3) 0%, rgba(76,206,213,0.25) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.4s ease;
+  }
+
+  .team-card:hover .team-card-photo {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  .team-card-photo .team-initials {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.95);
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    transition: transform 0.4s ease;
+  }
+
+  .team-card:hover .team-card-photo .team-initials {
+    transform: scale(1.08);
+  }
+
+  .team-card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .team-card:hover .team-card-photo img {
+    transform: scale(1.08);
+  }
+
+  .team-card-body {
+    position: relative;
+    padding: 20px 18px 24px;
+    z-index: 2;
+  }
+
+  .team-card-name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    line-height: 1.25;
+    transition: color 0.3s ease;
+  }
+
+  .team-card:hover .team-card-name {
+    color: #fff;
+  }
+
+  .team-card-role {
+    position: relative;
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .team-card-role::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--orange), var(--teal));
+    transition: width 0.35s ease;
+  }
+
+  .team-card:hover .team-card-role::after {
+    width: 100%;
+  }
+
+  .team-card-desc {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.45;
+    text-align: left;
+    transition: color 0.35s ease;
+  }
+
+  .team-card:hover .team-card-desc {
+    color: rgba(255,255,255,0.65);
+  }
+
+  /* Animación de entrada equipo */
+  #s7-team.active .team-card:nth-child(1) { animation: s7-fadeUp 0.55s ease 0.25s both; }
+  #s7-team.active .team-card:nth-child(2) { animation: s7-fadeUp 0.55s ease 0.35s both; }
+  #s7-team.active .team-card:nth-child(3) { animation: s7-fadeUp 0.55s ease 0.45s both; }
+
+  @media (max-width: 900px) {
+    .team-grid { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto; }
+  }
+
+  /* ── SLIDE 8: GEOGRAFÍA / ALCANCE ─────────────────── */
+  #s8 {
+    background: linear-gradient(135deg, #0d0b2e 0%, var(--blue-anchor) 100%);
+  }
+
+  #s8::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle 300px at 20% 30%, rgba(76,206,213,0.1) 0%, transparent 70%),
+      radial-gradient(circle 400px at 80% 70%, rgba(133,96,192,0.12) 0%, transparent 70%);
+  }
+
+  .s7-layout, .s8-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    max-width: 1100px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .s7-left, .s8-left {}
+
+  .s7-title, .s8-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .s7-body, .s8-body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  .countries-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .country-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .country-tag:hover {
+    transform: scale(1.03);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  /* Colombia y Perú destacados */
+  .country-tag.country-featured {
+    background: rgba(238,128,40,0.12);
+    border-color: rgba(238,128,40,0.35);
+    box-shadow: 0 0 0 1px rgba(238,128,40,0.2);
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .country-tag.country-featured:hover {
+    background: rgba(238,128,40,0.18);
+    border-color: rgba(238,128,40,0.5);
+    box-shadow: 0 4px 20px rgba(238,128,40,0.2);
+  }
+
+  .country-flag { font-size: 18px; }
+
+  .s7-right, .s8-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .geo-stat {
+    padding: 24px 28px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    border-left: 4px solid;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.35s ease,
+                background 0.3s ease,
+                border-color 0.3s ease;
+  }
+
+  .geo-stat:hover {
+    transform: translateX(8px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  .geo-stat:nth-child(1) { border-left-color: var(--orange); }
+  .geo-stat:nth-child(2) { border-left-color: var(--violet); }
+  .geo-stat:nth-child(3) { border-left-color: var(--teal); }
+
+  .geo-stat-num {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .geo-stat:nth-child(1) .geo-stat-num { color: var(--orange); }
+  .geo-stat:nth-child(2) .geo-stat-num { color: var(--violet-light); }
+  .geo-stat:nth-child(3) .geo-stat-num { color: var(--teal); }
+
+  .geo-stat-desc {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.4;
+  }
+
+  /* Animación de entrada escalonada en slide 8 */
+  #s8.active .countries-grid .country-tag:nth-child(1) { animation: s7-fadeUp 0.5s ease 0.45s both; }
+  #s8.active .countries-grid .country-tag:nth-child(2) { animation: s7-fadeUp 0.5s ease 0.52s both; }
+  #s8.active .countries-grid .country-tag:nth-child(3) { animation: s7-fadeUp 0.5s ease 0.59s both; }
+  #s8.active .countries-grid .country-tag:nth-child(4) { animation: s7-fadeUp 0.5s ease 0.66s both; }
+  #s8.active .countries-grid .country-tag:nth-child(5) { animation: s7-fadeUp 0.5s ease 0.73s both; }
+  #s8.active .countries-grid .country-tag:nth-child(6) { animation: s7-fadeUp 0.5s ease 0.8s both; }
+  #s8.active .s8-right .geo-stat:nth-child(1) { animation: s7-fadeUp 0.55s ease 0.4s both; }
+  #s8.active .s8-right .geo-stat:nth-child(2) { animation: s7-fadeUp 0.55s ease 0.5s both; }
+  #s8.active .s8-right .geo-stat:nth-child(3) { animation: s7-fadeUp 0.55s ease 0.6s both; }
+
+  /* ── SLIDE 9: CTA / CIERRE ─────────────────────────── */
+  #s9 {
+    background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-dark) 50%, #0d0b35 100%);
+    text-align: center;
+  }
+
+  #s9::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 70% at 50% 50%, rgba(133,96,192,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(76,206,213,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 40% at 80% 20%, rgba(238,128,40,0.08) 0%, transparent 50%);
+  }
+
+  .s8-content, .s9-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+  }
+
+  .s8-pre, .s9-pre {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 28px;
+  }
+
+  .s8-title, .s9-title {
+    font-family: var(--font-display);
+    font-size: clamp(44px, 5.5vw, 72px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 20px;
+  }
+
+  .s8-title .line2, .s9-title .line2 {
+    background: linear-gradient(135deg, var(--violet) 0%, var(--teal) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+  }
+
+  .s8-sub, .s9-sub {
+    font-family: var(--font-body);
+    font-size: 17px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.65;
+    margin-bottom: 48px;
+  }
+
+  .s8-ctas, .s9-ctas {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 52px;
+  }
+
+  .cta-primary {
+    padding: 16px 32px;
+    background: var(--orange);
+    color: white;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    box-shadow: 0 8px 24px rgba(238,128,40,0.35);
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .cta-secondary {
+    padding: 16px 32px;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.8);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .s8-contact, .s9-contact {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .contact-item {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .contact-item strong { color: rgba(255,255,255,0.75); font-weight: 500; }
+
+  /* ── ANIMATIONS ────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes expandWidth {
+    from { width: 0; }
+    to   { width: 60px; }
+  }
+
+  .slide.active [data-anim] {
+    animation: fadeUp 0.7s ease both;
+  }
+  .slide.active [data-anim="1"] { animation-delay: 0.1s; }
+  .slide.active [data-anim="2"] { animation-delay: 0.2s; }
+  .slide.active [data-anim="3"] { animation-delay: 0.3s; }
+  .slide.active [data-anim="4"] { animation-delay: 0.4s; }
+  .slide.active [data-anim="5"] { animation-delay: 0.5s; }
+  .slide.active [data-anim="6"] { animation-delay: 0.6s; }
+
+  /* ── KEYBOARD HINT ─────────────────────────────────── */
+  .key-hint {
+    position: fixed;
+    top: 28px;
+    left: 36px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.05em;
+    z-index: 100;
+  }
+
+  /* ── SLIDE INDEX (navegación lateral) ─────────────── */
+  .slide-index {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .slide-index button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.25s ease;
+  }
+  .slide-index button:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.3);
+  }
+  .slide-index button.active {
+    background: var(--orange);
+    border-color: var(--orange);
+    box-shadow: 0 0 12px rgba(238,128,40,0.5);
+  }
+
+  /* Transición entre slides más cinematográfica */
+  .slide.exit {
+    transform: translateY(-20px) scale(0.98);
+  }
+
+  /* ── ICONOS SVG MODERNOS ───────────────────────────── */
+  .icon-sm {
+    width: 18px;
+    height: 18px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+  .icon-md {
+    width: 24px;
+    height: 24px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+  .icon-lg {
+    width: 28px;
+    height: 28px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .icon-col { display: flex; align-items: center; justify-content: center; }
+  .pain-icon svg { color: var(--teal); }
+  .pillar.p1 .pillar-icon svg { color: var(--orange); }
+  .pillar.p2 .pillar-icon svg { color: var(--violet-light); }
+  .pillar.p3 .pillar-icon svg { color: var(--teal); }
+  .service-col-icon svg { color: rgba(255,255,255,0.9); }
+  .s1-eyebrow .icon-sm { color: var(--orange); }
+  .s1-eyebrow .icon-sm { color: var(--orange); margin-right: 4px; }
+
+  /* ── RESPONSIVE ─────────────────────────────────────── */
+  @media (max-width: 1200px) {
+    .slide { padding: 50px 48px; }
+    .s1-stat-num { font-size: 28px; }
+    .s2-layout { gap: 48px; }
+    .s7-layout, .s8-layout { gap: 48px; }
+    .tree-level-1 { gap: 20px; }
+  }
+
+  @media (max-width: 992px) {
+    .slide { padding: 40px 32px; }
+    .s1-center { max-width: 100%; padding: 0 16px; }
+    .s1-stats { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; padding: 20px 24px; }
+    .s1-stat { flex-direction: column; align-items: center; text-align: center; }
+    .s1-stat-label { max-width: none; }
+    .s1-stat-num { font-size: 24px; }
+    .s2-layout { grid-template-columns: 1fr; gap: 40px; }
+    .s2-right { padding-left: 0; padding-top: 20px; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+    .forja-steps { flex-wrap: wrap; gap: 16px; justify-content: center; }
+    .forja-step::after { display: none; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .s7-layout, .s8-layout {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .s7-right, .s8-right { order: -1; }
+    .tree-level-1 { flex-wrap: wrap; justify-content: center; }
+    .tree-branch { min-width: 180px; }
+    .watermark { font-size: 12px; right: 24px; }
+    .watermark img { height: 34px; }
+    .key-hint { font-size: 10px; left: 24px; }
+    .slide-index { right: 12px; }
+  }
+
+  @media (max-width: 768px) {
+    .slide { padding: 32px 24px; }
+    .s1-hero-logo img { height: clamp(64px, 18vw, 100px); }
+    .s1-eyebrow { font-size: 9px; }
+    .s1-sub { font-size: clamp(14px, 4vw, 18px); margin-bottom: 32px; }
+    .s1-stats { border-radius: 20px; }
+    .s2-title { font-size: clamp(28px, 6vw, 40px); }
+    .s2-stat-big { font-size: 56px; }
+    .s3-title { font-size: clamp(32px, 6vw, 44px); }
+    #s4 { padding: 24px 20px; }
+    .tree-level-1 { flex-direction: column; align-items: center; gap: 24px; }
+    .tree-branch { max-width: 320px; min-width: 0; width: 100%; }
+    .services-grid { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .s8-ctas, .s9-ctas { flex-direction: column; }
+    .s8-contact, .s9-contact { flex-direction: column; gap: 16px; }
+    .nav { padding: 8px 14px; gap: 12px; bottom: 20px; }
+    .nav-btn { font-size: 16px; }
+    .dot { width: 5px; height: 5px; }
+    .dot.active { width: 16px; }
+    .slide-index { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .slide { padding: 24px 20px; }
+    .s1-hero-logo img { height: 72px; }
+    .s6-quote { flex-direction: column; padding: 24px 24px; gap: 16px; border-left-width: 4px; }
+    .quote-mark { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="watermark">
+  <img src="assets/logo-color.png" alt="ForjaConsulting" onload="if(this.nextElementSibling) this.nextElementSibling.style.display='none'" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
+  <span class="watermark-text">Forja<span>Consulting</span></span>
+</div>
+<div class="key-hint">← → · Espacio · Clic en pilares</div>
+<div class="slide-index" id="slideIndex" aria-label="Ir a diapositiva"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ══════════════════════════════════════════════════
+       SLIDE 1 — PORTADA (premium)
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s1">
+    <div class="s1-center">
+      <div class="s1-hero-logo" id="s1HeroLogo">
+        <img src="assets/logo-color.png" alt="ForjaConsulting" onload="if(this.nextElementSibling) this.nextElementSibling.style.display='none'" onerror="this.style.display='none'">
+        <span class="s1-hero-fallback">Forja<span class="accent">Consulting</span></span>
+      </div>
+      <div class="s1-eyebrow">Arquitectura Empresarial · América Latina</div>
+      <h1 class="s1-title">Construimos empresas<br><span class="accent">que crecen.</span></h1>
+      <p class="s1-sub">Consultoría estratégica y arquitectura empresarial para PYMEs en América Latina.</p>
+
+      <div class="s1-stats">
+        <div class="s1-stat">
+          <span class="s1-stat-num o">99.5%</span>
+          <span class="s1-stat-label">LATAM es MiPYME</span>
+        </div>
+        <div class="s1-stat">
+          <span class="s1-stat-num v">73%</span>
+          <span class="s1-stat-label">fracasan sin estrategia</span>
+        </div>
+        <div class="s1-stat">
+          <span class="s1-stat-num t">3×</span>
+          <span class="s1-stat-label">más supervivencia con plan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SLIDE 2 — EL PROBLEMA
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="s2-layout">
+      <div class="s2-left">
+        <div class="s2-eyebrow" data-anim="1">La realidad de las PYMEs LATAM</div>
+        <div class="s2-title" data-anim="2">
+          El esfuerzo está.<br>La <em>dirección</em><br>muchas veces, no.
+        </div>
+        <div class="s2-body" data-anim="3">
+          Las PYMEs latinoamericanas no fracasan por falta de trabajo ni de talento. Fracasan porque nadie les mostró cómo construir la estructura que convierte el esfuerzo en resultados sostenibles.
+        </div>
+        <div data-anim="4">
+          <div class="s2-stat-big"><span>45</span>%</div>
+          <div class="s2-stat-desc">de las MiPYMEs en LATAM<br>no supera los 2 años de vida.<br><span style="font-size:11px;color:#a0aec0">Fuente: OCDE · Banco Mundial · 2025</span></div>
+        </div>
+      </div>
+
+      <div class="s2-right" data-anim="3">
+        <div style="font-family:var(--font-body);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:20px;">Los 5 dolores más críticos</div>
+        <div class="s2-pains">
+          <div class="pain-item">
+            <div class="pain-icon icon-col"><svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+            <div class="pain-text"><strong>Sin estrategia ejecutable</strong>Visión sin plan. Energía sin dirección. Crecimiento sin control.</div>
+          </div>
+          <div class="pain-item">
+            <div class="pain-icon icon-col"><svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+            <div class="pain-text"><strong>Operaciones que no escalan</strong>Cada cliente nuevo significa más caos, no más caja.</div>
+          </div>
+          <div class="pain-item">
+            <div class="pain-icon icon-col"><svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="pain-text"><strong>Finanzas sin visibilidad</strong>Rentabilidad en papel, liquidez en crisis. El flujo de caja sorprende cada mes.</div>
+          </div>
+          <div class="pain-item">
+            <div class="pain-icon icon-col"><svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div class="pain-text"><strong>Talento sin alineación</strong>El 67% del talento LATAM no está comprometido. Rotación que cuesta 150% del salario.</div>
+          </div>
+          <div class="pain-item">
+            <div class="pain-icon icon-col"><svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="pain-text"><strong>Tecnología sin estrategia</strong>Herramientas adoptadas sin propósito. Digitalización que no genera ROI.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SLIDE 3 — QUIÉNES SOMOS
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="s3-content">
+      <div class="section-label" data-anim="1">Nuestra identidad</div>
+      <div class="s3-title" data-anim="2">
+        No somos una firma de<br><span class="grad">teoría corporativa.</span>
+      </div>
+      <div class="s3-sub" data-anim="3">
+        Somos arquitectos empresariales que acompañamos de cerca a líderes de PYMEs con herramientas prácticas, experiencia real y resultados medibles.
+      </div>
+
+      <div class="pillars-grid" data-anim="4" id="s3Pillars">
+        <div class="pillar p1" data-pillar="1">
+          <div class="pillar-icon-wrap">
+            <div class="pillar-icon icon-col"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+          </div>
+          <div class="pillar-body">
+            <div class="pillar-title">Misión</div>
+            <div class="pillar-desc">Acompañar a las PYMEs latinoamericanas con consultoría estratégica práctica y accesible, combinando experiencia real con herramientas innovadoras, para generar crecimiento sostenible y resultados medibles.</div>
+          </div>
+        </div>
+        <div class="pillar p2" data-pillar="2">
+          <div class="pillar-icon-wrap">
+            <div class="pillar-icon icon-col"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          </div>
+          <div class="pillar-body">
+            <div class="pillar-title">Visión</div>
+            <div class="pillar-desc">Ser el socio estratégico de referencia para las PYMEs latinoamericanas — la firma que forja su crecimiento sostenible, genera valor real y las impulsa a competir en cualquier escenario.</div>
+          </div>
+        </div>
+        <div class="pillar p3" data-pillar="3">
+          <div class="pillar-icon-wrap">
+            <div class="pillar-icon icon-col"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          </div>
+          <div class="pillar-body">
+            <div class="pillar-title">Nuestra diferencia</div>
+            <div class="pillar-desc">Metodología FORJA propia. Enfoque 100% en PYMEs. Sin teoría genérica: cada intervención es diseñada para tu empresa, tu sector y tu momento de crecimiento.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SLIDE 4 — ARQUITECTURA EMPRESARIAL (árbol)
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="arch-tree" data-anim="1">
+      <div class="tree-root">Arquitectura Empresarial</div>
+      <p class="tree-root-sub">4 pilares. 12 servicios. 1 objetivo: hacer crecer tu empresa.</p>
+      <div class="tree-trunk"></div>
+      <div class="tree-connector"></div>
+
+      <div class="tree-level-1" id="s4Tree">
+        <div class="tree-branch p1">
+          <div class="tree-node">
+            <span class="tree-node-expand-icon">▼</span>
+            <div class="tree-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg></div>
+            <div class="tree-node-title">ADN Estratégico</div>
+            <div class="tree-node-sub">Arquitectura de Negocio</div>
+          </div>
+          <div class="tree-stem"></div>
+          <div class="tree-leaves">
+            <div class="tree-leaf"><strong>Estrategia</strong>Construimos el mapa desde donde estás hasta donde podemos llegar.</div>
+            <div class="tree-leaf"><strong>Gobierno</strong>Estructura organizacional sólida que soporta el crecimiento.</div>
+            <div class="tree-leaf"><strong>Sostenibilidad</strong>Integramos propósito y rentabilidad para generar valor a largo plazo.</div>
+          </div>
+        </div>
+
+        <div class="tree-branch p2">
+          <div class="tree-node">
+            <span class="tree-node-expand-icon">▼</span>
+            <div class="tree-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+            <div class="tree-node-title">Motor Operativo</div>
+            <div class="tree-node-sub">Arquitectura de Procesos</div>
+          </div>
+          <div class="tree-stem"></div>
+          <div class="tree-leaves">
+            <div class="tree-leaf"><strong>Operaciones</strong>Procesos eficientes y rentables que liberan recursos para crecer.</div>
+            <div class="tree-leaf"><strong>Finanzas</strong>Procesos con respaldo económico para el crecimiento.</div>
+            <div class="tree-leaf"><strong>Talento</strong>Equipos alineados y comprometidos con la estrategia.</div>
+          </div>
+        </div>
+
+        <div class="tree-branch p3">
+          <div class="tree-node">
+            <span class="tree-node-expand-icon">▼</span>
+            <div class="tree-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/></svg></div>
+            <div class="tree-node-title">Inteligencia Digital</div>
+            <div class="tree-node-sub">Arquitectura de Capacidades Digitales</div>
+          </div>
+          <div class="tree-stem"></div>
+          <div class="tree-leaves">
+            <div class="tree-leaf"><strong>Estrategia Tecnológica</strong>Tecnología que potencia tu ventaja competitiva y elimina la obsolescencia.</div>
+            <div class="tree-leaf"><strong>Inteligencia de Datos</strong>Convertimos datos en decisiones estratégicas con BI e IA accesible.</div>
+            <div class="tree-leaf"><strong>Innovación y Agilidad</strong>Metodologías y cultura que aceleran tu transformación.</div>
+          </div>
+        </div>
+
+        <div class="tree-branch p4">
+          <div class="tree-node">
+            <span class="tree-node-expand-icon">▼</span>
+            <div class="tree-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            <div class="tree-node-title">Enfoque al Cliente</div>
+            <div class="tree-node-sub">Arquitectura de Valor</div>
+          </div>
+          <div class="tree-stem"></div>
+          <div class="tree-leaves">
+            <div class="tree-leaf"><strong>Experiencia (CX)</strong>Viajes del cliente con niveles mínimos de fricción.</div>
+            <div class="tree-leaf"><strong>Comercial</strong>Ajuste de las estrategias de ventas y fidelización.</div>
+          </div>
+        </div>
+      </div>
+      <p class="arch-tree-hint">Clic en un pilar para desplegar</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SLIDE 5 — METODOLOGÍA FORJA
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s6">
+    <div class="s5-content s6-content">
+      <div style="font-family:var(--font-body);font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--orange);margin-bottom:16px;" data-anim="1">Nuestra metodología</div>
+      <div class="s5-title" data-anim="2">Metodología <span style="background:linear-gradient(135deg,var(--violet),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">FORJA</span></div>
+      <div class="s5-sub" data-anim="3">5 etapas. Un sistema probado para transformar tu empresa con precisión y sin interrumpir tu operación.</div>
+
+      <div class="forja-steps" data-anim="4" id="forjaSteps">
+        <div class="forja-step f-step">
+          <div class="forja-step-card">
+            <div class="step-bg"></div>
+            <div class="step-letter">F</div>
+            <div class="step-word">Fijar</div>
+            <div class="step-desc">Definimos el punto de partida real con diagnóstico profundo</div>
+          </div>
+          <div class="forja-step-detail">
+            <div class="forja-step-detail-inner"><strong>Diagnóstico Integrado 360°.</strong> Evaluamos 10 dimensiones clave, mediante nuestro radar de madurez.</div>
+          </div>
+        </div>
+        <div class="forja-step f-step">
+          <div class="forja-step-card">
+            <div class="step-bg"></div>
+            <div class="step-letter">O</div>
+            <div class="step-word">Orientar</div>
+            <div class="step-desc">Trazamos la dirección estratégica con objetivos claros</div>
+          </div>
+          <div class="forja-step-detail">
+            <div class="forja-step-detail-inner"><strong>Road map de Transformación.</strong> Convertimos el diagnóstico en un plan claro y priorizado.</div>
+          </div>
+        </div>
+        <div class="forja-step f-step">
+          <div class="forja-step-card">
+            <div class="step-bg"></div>
+            <div class="step-letter">R</div>
+            <div class="step-word">Rediseñar</div>
+            <div class="step-desc">Construimos el nuevo modelo: procesos, estructura y sistemas</div>
+          </div>
+          <div class="forja-step-detail">
+            <div class="forja-step-detail-inner"><strong>Implementación.</strong> Acompañamos al equipo en la ejecución.</div>
+          </div>
+        </div>
+        <div class="forja-step f-step">
+          <div class="forja-step-card">
+            <div class="step-bg"></div>
+            <div class="step-letter">J</div>
+            <div class="step-word">Justificar</div>
+            <div class="step-desc">Sustentamos cada decisión con datos y ROI proyectado</div>
+          </div>
+          <div class="forja-step-detail">
+            <div class="forja-step-detail-inner"><strong>Control de Gestión.</strong> Tableros de control para monitorear el cambio con números, no con intuiciones.</div>
+          </div>
+        </div>
+        <div class="forja-step f-step">
+          <div class="forja-step-card">
+            <div class="step-bg"></div>
+            <div class="step-letter">A</div>
+            <div class="step-word">Acompañar</div>
+            <div class="step-desc">Implementamos contigo y medimos resultados reales</div>
+          </div>
+          <div class="forja-step-detail">
+            <div class="forja-step-detail-inner"><strong>Escalabilidad.</strong> Preparamos tu estructura para que la expansión o la inversión sean el siguiente paso natural.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SLIDE 7 — IMPACTO / RESULTADOS
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s7">
+    <div class="s6-content s7-content">
+      <div class="s6-header s7-header" data-anim="1">
+        <div class="s6-eyebrow s7-eyebrow">Resultados que importan</div>
+        <div class="s6-title s7-title">El impacto de hacer las cosas <em>bien.</em></div>
+      </div>
+
+      <div class="metrics-grid" data-anim="2">
+        <div class="metric-card mc1">
+          <div class="metric-num">34%</div>
+          <div class="metric-label">Incremento promedio de ingresos post-intervención estratégica</div>
+          <span class="metric-source">McKinsey LATAM · 2025</span>
+        </div>
+        <div class="metric-card mc2">
+          <div class="metric-num">3x</div>
+          <div class="metric-label">Más probabilidades de superar 5 años con plan estratégico formal</div>
+          <span class="metric-source">Banco Mundial · BID · 2024</span>
+        </div>
+        <div class="metric-card mc3">
+          <div class="metric-num">90d</div>
+          <div class="metric-label">Tiempo promedio para ver primeros resultados visibles y medibles</div>
+          <span class="metric-source">Benchmark ForjaConsulting</span>
+        </div>
+        <div class="metric-card mc4">
+          <div class="metric-num">68%</div>
+          <div class="metric-label">Horas de liderazgo recuperadas al eliminar decisiones reactivas</div>
+          <span class="metric-source">EY LATAM · 2024</span>
+        </div>
+      </div>
+
+      <div class="s6-quote" data-anim="3">
+        <div class="quote-mark">"</div>
+        <div>
+          <div class="quote-text">Una PYME no necesita más tecnología, más marketing ni más financiamiento. Necesita primero la estructura que le permita aprovechar cualquier recurso que tenga.</div>
+          <div class="quote-source">— ForjaConsulting · Principio de Arquitectura Empresarial para PYMEs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SLIDE 8 — ALCANCE GEOGRÁFICO
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s8">
+    <div class="s7-layout s8-layout">
+      <div class="s7-left s8-left">
+        <div class="section-label" data-anim="1">Presencia regional</div>
+        <div class="s7-title s8-title" data-anim="2">América Latina<br>es nuestro<br><span style="color:var(--teal);">territorio.</span></div>
+        <div class="s7-body s8-body" data-anim="3">Operamos con presencia activa en los principales mercados de la región, con profundo conocimiento de los contextos regulatorios, culturales y económicos de cada país.</div>
+
+        <div class="countries-grid">
+          <div class="country-tag country-featured"><span class="country-flag">🇨🇴</span> Colombia</div>
+          <div class="country-tag"><span class="country-flag">🇲🇽</span> México</div>
+          <div class="country-tag country-featured"><span class="country-flag">🇵🇪</span> Perú</div>
+          <div class="country-tag"><span class="country-flag">🇨🇱</span> Chile</div>
+          <div class="country-tag"><span class="country-flag">🇪🇨</span> Ecuador</div>
+          <div class="country-tag"><span class="country-flag">🌎</span> + LATAM</div>
+        </div>
+      </div>
+
+      <div class="s7-right s8-right">
+        <div class="geo-stat">
+          <div class="geo-stat-num">99.5%</div>
+          <div class="geo-stat-desc">del tejido empresarial LATAM son MiPYMEs — nuestro mercado natural y nuestro propósito</div>
+        </div>
+        <div class="geo-stat">
+          <div class="geo-stat-num">60%</div>
+          <div class="geo-stat-desc">del empleo formal en LATAM es generado por PYMEs — transformarlas es transformar la región</div>
+        </div>
+        <div class="geo-stat">
+          <div class="geo-stat-num">28%</div>
+          <div class="geo-stat-desc">del PIB regional aportan las MiPYMEs — un sector con un potencial sin explotar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SLIDE 8B — EQUIPO DE LIDERAZGO (penúltimo)
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s7-team">
+    <div class="team-slide-inner">
+      <div class="section-label" data-anim="1">Nuestro equipo</div>
+      <div class="team-title" data-anim="2">Equipo de <span class="team-title-accent">Liderazgo</span></div>
+      <div class="team-sub" data-anim="3">Líderes visionarios que guían nuestra estrategia y cultura organizacional.</div>
+
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-card-photo"><span class="team-initials">NB</span></div>
+          <div class="team-card-body">
+            <div class="team-card-name">Nestor (Fernando) Barreto Gómez</div>
+            <div class="team-card-role">Estratega Empresarial</div>
+            <div class="team-card-desc">Más de 25 años desarrollando cadenas de abastecimiento resilientes para el crecimiento del mercado. MBA ESADE / U. del Pacífico, Georgia Tech Supply & Demand.</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-card-photo"><span class="team-initials">EA</span></div>
+          <div class="team-card-body">
+            <div class="team-card-name">Eduard Fabian Alvarez Pacheco</div>
+            <div class="team-card-role">Transformación Digital</div>
+            <div class="team-card-desc">Arquitecto Empresarial Senior con +15 años liderando planeación estratégica de TI, transformación digital y gobierno corporativo en sector público y privado.</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-card-photo"><span class="team-initials">NA</span></div>
+          <div class="team-card-body">
+            <div class="team-card-name">Natalia Ardila Barreto</div>
+            <div class="team-card-role">Producto y operaciones digitales</div>
+            <div class="team-card-desc">Ejecutiva global con +16 años en tecnología, e-commerce y fintech. Product Director, Ops Director (Yape / Stori / Rappi / McKinsey). Capacidad de innovar y generar resultados tangibles.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SLIDE 9 — CIERRE / CTA
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s9">
+    <div class="s8-content s9-content">
+      <div class="s8-pre s9-pre" data-anim="1">El siguiente paso</div>
+      <div class="s8-title s9-title" data-anim="2">
+        Tu empresa merece
+        <span class="line2">una arquitectura<br>que la sostenga.</span>
+      </div>
+      <div class="s8-sub s9-sub" data-anim="3">
+        Agenda tu diagnóstico empresarial gratuito.<br>
+        En 60 minutos identificamos los 3 puntos críticos<br>
+        que más impactan el crecimiento de tu empresa.
+      </div>
+
+      <div class="s8-ctas s9-ctas" data-anim="4">
+        <button class="cta-primary">Solicita tu Diagnóstico Gratuito →</button>
+        <button class="cta-secondary">Conoce nuestros servicios</button>
+      </div>
+
+      <div class="s8-contact s9-contact" data-anim="5">
+        <div class="contact-item">🌐 <strong>forjaconsulting.com</strong></div>
+        <div class="contact-item">📧 <strong>hola@forjaconsulting.com</strong></div>
+        <div class="contact-item">📍 <strong>Colombia · LATAM</strong></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end deck -->
+
+<!-- NAVIGATION -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">←</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">→</button>
+  <div class="slide-counter" id="counter">1 / 10</div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  let animating = false;
+
+  // Build dots and slide index buttons
+  const dotsEl = document.getElementById('dots');
+  const indexEl = document.getElementById('slideIndex');
+  const labels = ['Portada','El problema','Quiénes somos','Arquitectura','Metodología FORJA','Impacto','Alcance','Equipo','Contacto'];
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = i === 0 ? 'active' : '';
+    btn.title = labels[i] || `Slide ${i + 1}`;
+    btn.onclick = () => goTo(i);
+    indexEl.appendChild(btn);
+  });
+
+  function goTo(n) {
+    if (animating || n === current) return;
+    animating = true;
+
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+
+    setTimeout(() => {
+      slides[current].classList.remove('exit');
+      current = n;
+      slides[current].classList.add('active');
+
+      // Update UI
+      document.querySelectorAll('.dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+      document.querySelectorAll('#slideIndex button').forEach((b, i) => {
+        b.classList.toggle('active', i === current);
+      });
+      document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+      document.getElementById('prevBtn').disabled = current === 0;
+      document.getElementById('nextBtn').disabled = current === total - 1;
+
+      // Progress bar
+      const pct = ((current + 1) / total) * 100;
+      document.getElementById('progress').style.width = pct + '%';
+
+      // Ocultar watermark en portada (slide 1)
+      document.body.classList.toggle('s1-on', current === 0);
+
+      animating = false;
+    }, 300);
+  }
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next >= 0 && next < total) goTo(next);
+  }
+
+  // Slide 5 (Metodología FORJA): clic en tarjeta para desplegar contenido
+  const forjaSteps = document.getElementById('forjaSteps');
+  if (forjaSteps) {
+    forjaSteps.querySelectorAll('.forja-step-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const step = this.closest('.forja-step');
+        if (step) step.classList.toggle('expanded');
+      });
+    });
+  }
+
+  // Slide 4: clic en pilar para desplegar/replegar hojas
+  const s4Tree = document.getElementById('s4Tree');
+  if (s4Tree) {
+    s4Tree.querySelectorAll('.tree-node').forEach(node => {
+      node.addEventListener('click', function() {
+        const branch = this.closest('.tree-branch');
+        if (branch) branch.classList.toggle('expanded');
+      });
+    });
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault(); navigate(1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); navigate(-1);
+    }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(total - 1);
+  });
+
+  // Touch/swipe
+  let touchX = 0;
+  document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) navigate(diff > 0 ? 1 : -1);
+  });
+
+  // Init
+  slides[0].classList.add('active');
+  document.body.classList.add('s1-on');
+  document.getElementById('prevBtn').disabled = true;
+  document.getElementById('progress').style.width = (1/total*100) + '%';
+
+</script>
+</body>
+</html>
